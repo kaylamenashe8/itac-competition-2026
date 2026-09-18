@@ -18,6 +18,7 @@ class AuthenticationFlows:
         self.login_page.login_button.click()
 
     def navigate_to_login_page(self):
+        self._wait_for_login_or_registration_page()
         if self.login_page.login_header.is_visible():
             return
         elif self.registration_page.registration_header.is_visible():
@@ -33,12 +34,21 @@ class AuthenticationFlows:
         self.registration_page.create_workspace_button.click()
 
     def navigate_to_registration_page(self):
+        self._wait_for_login_or_registration_page()
         if self.registration_page.registration_header.is_visible():
             return
         elif self.login_page.login_header.is_visible():
             self.login_page.create_account_link.click()
         else:
             raise ValueError("Not currently located in login or registration page")
+
+    def _wait_for_login_or_registration_page(self):
+        # is_visible() below doesn't wait, so without this the check can run before
+        # the page finishes rendering after navigation and always fall through to the error.
+        try:
+            self.login_page.login_header.or_(self.registration_page.registration_header).wait_for(state="visible")
+        except PlaywrightTimeoutError:
+            pass
 
 
 

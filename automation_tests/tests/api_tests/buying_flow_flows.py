@@ -27,26 +27,40 @@ def unavailable_seat_ids(base_url: str, event_id: str, api_key: str = None) -> l
     return [seat["seat_id"] for seat in seats if seat["status"] != "available"]
 
 
-def book_only_available_seats(base_url: str, api_key: str = None):
+def seats_booked(base_url: str, event_id: str, seat_ids: list[str], api_key: str = None) -> bool:
+    try:
+        book_seats(base_url, event_id, seat_ids, api_key)
+        return True
+    except Exception:
+        return False
+
+
+def book_only_available_seats(base_url: str, api_key: str = None) -> bool:
+    results = []
     for event in get_upcoming_events(base_url, api_key):
         seat_ids = available_seat_ids(base_url, event["id"], api_key)[:COUNT]
         if seat_ids:
-            book_seats(base_url, event["id"], seat_ids, api_key)
+            results.append(seats_booked(base_url, event["id"], seat_ids, api_key))
+    return all(results)
 
 
-def book_only_unavailable_seats(base_url: str, api_key: str = None):
+def book_only_unavailable_seats(base_url: str, api_key: str = None) -> bool:
+    results = []
     for event in get_upcoming_events(base_url, api_key):
         seat_ids = unavailable_seat_ids(base_url, event["id"], api_key)[:COUNT]
         if seat_ids:
-            book_seats(base_url, event["id"], seat_ids, api_key)
+            results.append(seats_booked(base_url, event["id"], seat_ids, api_key))
+    return any(results)
 
 
-def book_mixed_available_and_unavailable_seats(base_url: str, api_key: str = None):
+def book_mixed_available_and_unavailable_seats(base_url: str, api_key: str = None) -> bool:
     half = COUNT // 2
+    results = []
     for event in get_upcoming_events(base_url, api_key):
         seat_ids = (
             available_seat_ids(base_url, event["id"], api_key)[:half]
             + unavailable_seat_ids(base_url, event["id"], api_key)[:COUNT - half]
         )
         if len(seat_ids) == COUNT:
-            book_seats(base_url, event["id"], seat_ids, api_key)
+            results.append(seats_booked(base_url, event["id"], seat_ids, api_key))
+    return any(results)
