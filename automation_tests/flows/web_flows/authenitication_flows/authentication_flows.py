@@ -43,8 +43,6 @@ class AuthenticationFlows:
             raise ValueError("Not currently located in login or registration page")
 
     def _wait_for_login_or_registration_page(self):
-        # is_visible() below doesn't wait, so without this the check can run before
-        # the page finishes rendering after navigation and always fall through to the error.
         try:
             self.login_page.login_header.or_(self.registration_page.registration_header).wait_for(state="visible")
         except PlaywrightTimeoutError:

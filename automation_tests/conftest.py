@@ -66,9 +66,6 @@ def logged_in_page(browser: Browser, base_url: str, active_user) -> Page:
 
 @pytest.fixture(scope="session")
 def seating_test_event_id(api_base_url, active_user, reset_workspace_via_api) -> str:
-    # "Off By One" is seeded with a fixed A1 held / B1 available / F1 sold layout,
-    # but its event id is re-randomized on every workspace reset, so it must be
-    # looked up by name rather than hardcoded.
     return find_event_by_name(api_base_url, "Off By One", active_user.api_key)["id"]
 
 
