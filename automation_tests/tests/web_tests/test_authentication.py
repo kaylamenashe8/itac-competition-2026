@@ -31,7 +31,7 @@ def test_login_with_valid_credentials(auth_flows: AuthenticationFlows, assert_on
 
 
 
-
+@pytest.mark.skip(reason="needs more robust solution before unskipping to logout/reset before attempting test")
 def test_register_new_account(auth_flows: AuthenticationFlows, assert_on: AssertOnScreen):
     new_email = f"kaylamenashe-{uuid.uuid4().hex[:10]}@gmail.com"
 
