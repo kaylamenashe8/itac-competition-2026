@@ -1,0 +1,24 @@
+import pytest
+
+from automation_tests.tests.api_tests.buying_flow_flows import (
+    book_mixed_available_and_unavailable_seats,
+    book_only_available_seats,
+    book_only_unavailable_seats,
+)
+
+
+@pytest.mark.no_auto_login
+def test_only_available_seats(api_base_url, active_user):
+    book_only_available_seats(api_base_url, active_user.api_key)
+
+
+@pytest.mark.no_auto_login
+def test_only_unavailable_seats(api_base_url, active_user):
+    with pytest.raises(Exception):
+        book_only_unavailable_seats(api_base_url, active_user.api_key)
+
+
+@pytest.mark.no_auto_login
+def test_mixed_available_and_unavailable_seats(api_base_url, active_user):
+    with pytest.raises(Exception):
+        book_mixed_available_and_unavailable_seats(api_base_url, active_user.api_key)
